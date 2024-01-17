@@ -1,4 +1,0 @@
-python下的01
-================
-
-yeah, it's my first python file.
