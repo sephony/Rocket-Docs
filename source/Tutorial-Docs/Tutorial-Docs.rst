@@ -588,10 +588,11 @@ False  True   True
     =====  =====
     1      Second column of row 1.
     2      Second column of row 2.
-        Second line of paragraph.
+
+           Second line of paragraph.
     3      - Second column of row 3.
 
-        - Second item in bullet
+           - Second item in bullet
             list (row 3, column 2).
     \      Row 4; column 1 will be empty.
     =====  =====
@@ -603,6 +604,7 @@ col 1  col 2
 =====  =====
 1      Second column of row 1.
 2      Second column of row 2.
+
        Second line of paragraph.
 3      - Second column of row 3.
 
@@ -610,6 +612,166 @@ col 1  col 2
          list (row 3, column 2).
 \      Row 4; column 1 will be empty.
 =====  =====
+
+显式标记块
+^^^^^^^^^^^^^^^^^^
+
+显式标记语法用于脚注、引文、超链接目标、指令、替换定义和注释。
+
+显式标记块是文本块：
+
+- 第一行以 ``..`` 开头，后跟 ``空格`` （“显式标记开始”），
+
+- 第二行和后续行（如果有）相对于第一行缩进，并且它在未缩进的行之前结束。
+
+显式标记块类似于字段列表项。始终从块体的第二行和后续行中删除最大公共缩进。因此，如果第一个构造适合一行，并且第一个构造和第二个构造的缩进应该不同，则第一个构造不应与显式标记开始在同一行上开始。
+
+显式标记块和其他元素之间需要空行，但在明确的标记块之间可以选择空行。
+
+脚注
+"""""""""""""""""""""""""""""""
+
+.. todo
+
+引文
+"""""""""""""""""""""""""""""""
+
+引文与脚注相同，只是它们仅使用非数字标签，例如[note]或[GVR2001]。引文标签是简单的参考名称（不区分大小写的单个单词，由字母数字加上内部连字符、下划线和句点组成；没有空格）。引文可以单独呈现，并且与脚注不同。例如：
+.. todo
+
+超链接
+"""""""""""""""""""""""""""""""
+
+Doctree element: target
+
+通常也称为显式超链接目标，以区别于后面定义的隐式超链接目标。
+
+**超链接目标** 标识文档内部或外部的位置，可以通过 **超链接引用** 链接到该位置。
+
+超链接目标可以是命名的或匿名的。命名超链接目标由显式标记开始（“..”）、下划线、引用名称（ **无尾部下划线** ）、冒号、空格和链接块组成::
+
+    .. _Python: http://www.python.org
+    .. _`Baidu Search`: https://www.baidu.com/
+
+超链接引用由引用名称和下划线组成，可以通过引用名称链接到命名超链接目标。::
+
+    Python_ is a programming language.
+
+    `Baidu Search`_ is a search engine.
+
+引用名称是空格中性且不区分大小写的。有关详细信息和示例，请参阅参考名称。
+
+.. warning:: 为了统一和规范化，强烈建议对所有引用名称使用反引号 ````` 括住，如 ```Python```。
+
+匿名超链接目标由显式标记开始（“..”）、两个下划线、一个冒号、空格和一个链接块组成；没有引用名称::
+
+    .. __: 匿名超链接目标链接块
+
+超链接目标分为三种类型：内部、外部和间接。
+
+1.  内部超链接目标可以是空链接。它们提供了一个端点，允许超链接将文档中的一个位置连接到另一个位置。内部超链接目标指向目标后面的元素。例如
+    ::
+
+        Clicking on this internal hyperlink will take us to the `target`_
+        where was defined below.
+
+        .. _`target`:
+
+        The hyperlink target above points to this paragraph.
+
+    实际输出如下:
+
+    Clicking on this internal hyperlink will take us to the `target`_
+    below.
+
+    .. _`target`:
+
+    The hyperlink target above points to this paragraph.
+
+    如果连续几个超链接目标相邻且前几个均为内部空链接，则来自最后一个超链接目标的 URI 将传播到内部超链接目标；它们都将指向相同的 URI（即使这个链接为内部空链接也成立）而无需重复 URI。例如，以下所有三个超链接目标都引用相同的 URI::
+
+        .. _`Python DOC-SIG 邮件列表存档`:
+        .. _`archive`:
+        .. _`Doc-SIG`: https://mail.python.org/pipermail/doc-sig/
+
+        This is a reference to the `Python DOC-SIG 邮件列表存档`_.
+        This is a reference to the `archive`_.
+        This is a reference to the `Doc-SIG`_.
+
+    实际输出如下:
+
+    .. _`Python DOC-SIG 邮件列表存档`:
+    .. _`archive`:
+    .. _`Doc-SIG`: https://mail.python.org/pipermail/doc-sig/
+
+    This is a reference to the `Python DOC-SIG 邮件列表存档`_.
+    This is a reference to the `archive`_.
+    This is a reference to the `Doc-SIG`_.
+
+2.  外部超链接目标的链接块中有绝对或相对 URI 或电子邮件地址。例如，采用以下输入
+    ::
+
+        See the Python_ home page for info.
+
+        `Write to me`_ with your questions.
+
+        .. _Python: https://www.python.org
+        .. _Write to me: jdoe@example.com
+
+    实际输出如下:
+
+    See the Python_ home page for info.
+
+    `Write to me`_ with your questions.
+
+    .. _Python: https://www.python.org
+    .. _Write to me: jdoe@example.com
+
+    外部超链接的 URI 可以与显式标记开始和目标名称在同一行开始，也可以在紧随其后的缩进文本块中开始，中间没有空行。如果外部链接有多行，它们将被连接起来视为一个整体。与普通段落不同的是，此时的换行在URI中并不会生成空格。如::
+
+        .. _entirely-below:
+            https://docutils.
+            sourceforge.net/rst.html
+
+    如果外部超链接目标的 URI 包含下划线作为其最后一个字符，则必须将其转义以避免被误认为是间接超链接目标::
+
+        This link_ refers to a file called ``underscore_``.
+
+        .. _link: underscore\_
+
+    当然，一种更简便的办法是将 URI 直接包含在超链接引用中，如::
+
+        `Baidu Search <https://www.baidu.com/>`_
+
+    实际输出如下:
+
+    `Baidu Search <https://www.baidu.com/>`_
+
+    .. warning:: 链接文本和 URL 开头的 ``<`` 之间必须有一个空格
+    .. note::
+        单独定义超链接目标的写法则存在引用目标冲突的问题，如果你试图定义两个同名超链接目标，这将报错::
+
+            .. _`Python`: http://www.python.org
+
+            .. _`Python`: http://www.baidu.com
+
+        但是将 URI 直接包含在超链接引用的写法不存在引用目标冲突的问题，你完全可以这样写::
+
+            `Baidu Search <https://www.baidu.com/>`_
+
+            `Baidu Search <https://www.baidu.com/>`_
+
+    .. tip::
+        将 URI 直接包含在超链接引用的写法更简便，同时在对源码进行修改时也更加方便直观，我更倾向于这一种超链接引用方式。但是如果 URI 很长，或者需要在多个地方使用，那么使用显式标记块的写法更好。
+
+3.  间接超链接目标在其链接块中具有超链接引用。
+
+    .. todo
+
+--------------------------------------
+
+指令
+"""""""""""""""""""""""""""""""
 
 其他
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -624,9 +786,10 @@ col 1  col 2
 该 ``段落`` 不属于列表
 项（它是列表后面的块引用）。
 
-------------
+------------------------------------
 
-.. code:: shell
+.. code-block:: shell
+   :caption: Shell Session
 
    pip install PyQt-Fluent-Widgets -i https://pypi.org/simple/
 
